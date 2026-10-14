@@ -5,3 +5,4 @@ __pycache__/
 .venv/
 api/.env
 api/node_modules/
+data_generation/venv/

@@ -600,6 +600,15 @@ app.patch("/api/contracts/:id/status", async (req, res) => {
       [newStatus, contractId]
     );
 
+    // FIX: Update freelancer availability based on contract status
+    const freelancerId = updated.rows[0].freelancer_id;
+    const isNowAvailable = (newStatus !== 'IN_PROGRESS');
+    
+    await dbClient.query(
+      `UPDATE freelancers SET is_available = $1 WHERE id = $2`,
+      [isNowAvailable, freelancerId]
+    );
+
     await dbClient.query("COMMIT");
     res.json({
       message: "Contract status updated successfully",
@@ -614,7 +623,6 @@ app.patch("/api/contracts/:id/status", async (req, res) => {
     dbClient.release();
   }
 });
-
 // Unknown endpoint
 app.use((req, res) => {
   res.status(404).json({ error: "API endpoint not found." });
