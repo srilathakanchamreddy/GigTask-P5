@@ -365,38 +365,183 @@ app.get("/api/clients/:id/audit", async (req, res) => {
   }
 });
 
-// 7. Seven-day moving average revenue per freelancer
+// 7. Seven-day moving average revenue
 app.get("/api/analytics/moving-average", async (req, res) => {
+  const freelancerId = req.query.freelancer_id;
+
   try {
-    const result = await pool.query(`
-      WITH daily AS (
-        SELECT freelancer_id, created_at::date AS revenue_date,
-               SUM(budget) AS daily_revenue
-        FROM contracts
-        WHERE status = 'COMPLETED'
-        GROUP BY freelancer_id, created_at::date
-      ),
-      moving AS (
-        SELECT freelancer_id, revenue_date, daily_revenue,
-               ROUND(AVG(daily_revenue) OVER (
-                 PARTITION BY freelancer_id
-                 ORDER BY revenue_date
-                 ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
-               ), 2) AS moving_avg_7day
-        FROM daily
-      )
-      SELECT m.freelancer_id, f.name AS freelancer_name,
-             m.revenue_date, m.daily_revenue, m.moving_avg_7day
-      FROM moving m
-      JOIN freelancers f ON f.id = m.freelancer_id
-      ORDER BY m.revenue_date, f.name
-      LIMIT 5000
-    `);
+    let query, params;
+    
+    if (!freelancerId || freelancerId === 'all') {
+      // OVERALL PLATFORM: Dense Calendar
+      query = `
+        WITH DateRange AS (
+            SELECT generate_series(
+                (SELECT MIN(DATE(created_at)) FROM contracts WHERE status = 'COMPLETED'),
+                (SELECT MAX(DATE(created_at)) FROM contracts WHERE status = 'COMPLETED'),
+                '1 day'::interval
+            )::date AS calendar_date
+        ),
+        DailyRevenue AS (
+            SELECT 
+                d.calendar_date AS revenue_date,
+                COALESCE(SUM(c.budget), 0) AS daily_total
+            FROM DateRange d
+            LEFT JOIN contracts c 
+                ON d.calendar_date = DATE(c.created_at)
+                AND c.status = 'COMPLETED'
+            GROUP BY d.calendar_date
+        )
+        SELECT 
+            'Whole Platform' AS freelancer_name,
+            revenue_date,
+            daily_total,
+            ROUND(AVG(daily_total) OVER (
+                ORDER BY revenue_date 
+                ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+            ), 2) AS moving_avg_7day
+        FROM DailyRevenue
+        ORDER BY revenue_date
+      `;
+      params = [];
+    } else {
+      // SINGLE FREELANCER: Dense Calendar
+      query = `
+        WITH DateRange AS (
+            SELECT generate_series(
+                (SELECT MIN(DATE(created_at)) FROM contracts WHERE status = 'COMPLETED'),
+                (SELECT MAX(DATE(created_at)) FROM contracts WHERE status = 'COMPLETED'),
+                '1 day'::interval
+            )::date AS calendar_date
+        ),
+        FreelancerDates AS (
+            SELECT f.id AS freelancer_id, f.name AS freelancer_name, d.calendar_date
+            FROM freelancers f
+            CROSS JOIN DateRange d
+            WHERE f.id = $1
+        ),
+        DailyRevenue AS (
+            SELECT 
+                fd.freelancer_id,
+                fd.freelancer_name,
+                fd.calendar_date AS revenue_date,
+                COALESCE(SUM(c.budget), 0) AS daily_total
+            FROM FreelancerDates fd
+            LEFT JOIN contracts c 
+                ON fd.freelancer_id = c.freelancer_id 
+                AND fd.calendar_date = DATE(c.created_at)
+                AND c.status = 'COMPLETED'
+            GROUP BY fd.freelancer_id, fd.freelancer_name, fd.calendar_date
+        )
+        SELECT 
+            freelancer_id,
+            freelancer_name,
+            revenue_date,
+            daily_total,
+            ROUND(AVG(daily_total) OVER (
+                ORDER BY revenue_date 
+                ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+            ), 2) AS moving_avg_7day
+        FROM DailyRevenue
+        ORDER BY revenue_date
+      `;
+      params = [freelancerId];
+    }
+
+    const result = await pool.query(query, params);
     res.json({ data: result.rows });
   } catch (error) {
     handleError(res, error, "Unable to fetch moving-average analytics");
   }
 });
+
+// // 7. Seven-day moving average revenue per freelancer (Filtered by ID)
+// app.get("/api/analytics/moving-average", async (req, res) => {
+//   const freelancerId = req.query.freelancer_id;
+
+//   if (!freelancerId) {
+//     return res.status(400).json({ error: "freelancer_id query parameter is required." });
+//   }
+
+//   try {
+//     const result = await pool.query(`
+//       WITH DateRange AS (
+//           SELECT generate_series(
+//               (SELECT MIN(DATE(created_at)) FROM contracts WHERE status = 'COMPLETED'),
+//               (SELECT MAX(DATE(created_at)) FROM contracts WHERE status = 'COMPLETED'),
+//               '1 day'::interval
+//           )::date AS calendar_date
+//       ),
+//       FreelancerDates AS (
+//           SELECT f.id AS freelancer_id, f.name AS freelancer_name, d.calendar_date
+//           FROM freelancers f
+//           CROSS JOIN DateRange d
+//           WHERE f.id = $1  -- ONLY generate dates for the requested freelancer
+//       ),
+//       DailyRevenue AS (
+//           SELECT 
+//               fd.freelancer_id,
+//               fd.freelancer_name,
+//               fd.calendar_date AS revenue_date,
+//               COALESCE(SUM(c.budget), 0) AS daily_total
+//           FROM FreelancerDates fd
+//           LEFT JOIN contracts c 
+//               ON fd.freelancer_id = c.freelancer_id 
+//               AND fd.calendar_date = DATE(c.created_at)
+//               AND c.status = 'COMPLETED'
+//           GROUP BY fd.freelancer_id, fd.freelancer_name, fd.calendar_date
+//       )
+//       SELECT 
+//           freelancer_id,
+//           freelancer_name,
+//           revenue_date,
+//           daily_total,
+//           ROUND(AVG(daily_total) OVER (
+//               ORDER BY revenue_date 
+//               ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+//           ), 2) AS moving_avg_7day
+//       FROM DailyRevenue
+//       ORDER BY revenue_date
+//     `, [freelancerId]); // Safely pass the ID into the query
+
+//     res.json({ data: result.rows });
+//   } catch (error) {
+//     handleError(res, error, "Unable to fetch moving-average analytics");
+//   }
+// });
+
+// // 7. Seven-day moving average revenue per freelancer
+// app.get("/api/analytics/moving-average", async (req, res) => {
+//   try {
+//     const result = await pool.query(`
+//       WITH daily AS (
+//         SELECT freelancer_id, created_at::date AS revenue_date,
+//                SUM(budget) AS daily_revenue
+//         FROM contracts
+//         WHERE status = 'COMPLETED'
+//         GROUP BY freelancer_id, created_at::date
+//       ),
+//       moving AS (
+//         SELECT freelancer_id, revenue_date, daily_revenue,
+//                ROUND(AVG(daily_revenue) OVER (
+//                  PARTITION BY freelancer_id
+//                  ORDER BY revenue_date
+//                  ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+//                ), 2) AS moving_avg_7day
+//         FROM daily
+//       )
+//       SELECT m.freelancer_id, f.name AS freelancer_name,
+//              m.revenue_date, m.daily_revenue, m.moving_avg_7day
+//       FROM moving m
+//       JOIN freelancers f ON f.id = m.freelancer_id
+//       ORDER BY m.revenue_date, f.name
+//       LIMIT 5000
+//     `);
+//     res.json({ data: result.rows });
+//   } catch (error) {
+//     handleError(res, error, "Unable to fetch moving-average analytics");
+//   }
+// });
 
 // 8. Freelancer earnings ranking using DENSE_RANK
 app.get("/api/analytics/rankings", async (req, res) => {
