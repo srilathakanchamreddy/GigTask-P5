@@ -528,6 +528,22 @@ app.get("/api/reviews/analytics", async (req, res) => {
   }
 });
 
+// 12.5 Get all individual platform reviews
+app.get("/api/reviews", async (req, res) => {
+  try {
+    const mongo = getMongoDb();
+    const reviews = await mongo.collection("GigReviews")
+      .find({ rating: { $exists: true } }) // Ensures we only get actual reviews
+      .sort({ _id: -1 }) // Sort newest first
+      .limit(50)
+      .toArray();
+
+    res.json({ data: reviews });
+  } catch (error) {
+    handleError(res, error, "Unable to fetch individual reviews");
+  }
+});
+
 // 13. Portfolio/catalog documents for a freelancer
 app.get("/api/portfolios/:freelancerId", async (req, res) => {
   const freelancerId = req.params.freelancerId;

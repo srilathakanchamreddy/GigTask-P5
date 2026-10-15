@@ -1074,6 +1074,41 @@ async function loadReviewsAnalytics() {
                 }
             });
         }
+        // 4. Fetch Individual Reviews
+        const reviewsList = document.getElementById("reviews-list-results");
+        reviewsList.innerHTML = "<p>Loading recent reviews...</p>";
+        
+        try {
+            const reviewsRes = await fetch("http://localhost:3000/api/reviews");
+            const reviewsData = await reviewsRes.json();
+            
+            // Log the response to the browser console for debugging
+            console.log("Reviews API Response:", reviewsData);
+            
+            // Extract the array whether it is wrapped in .data or sent directly
+            const actualReviews = Array.isArray(reviewsData) ? reviewsData : reviewsData.data;
+            
+            if (!actualReviews || actualReviews.length === 0) {
+                reviewsList.innerHTML = "<p>No reviews have been posted yet.</p>";
+            } else {
+                let reviewsHtml = "";
+                actualReviews.forEach(review => {
+                    const stars = '⭐'.repeat(Math.round(review.rating || 0));
+                    
+                    reviewsHtml += `
+                        <div class="card" style="border: 1px solid #dee2e6; background-color: #f8f9fa;">
+                            <h5 style="margin: 0 0 10px 0; color: #0369a1;">Rating: ${stars}</h5>
+                            <p style="margin: 5px 0;"><strong>Freelancer ID:</strong> ${review.freelancer_id}</p>
+                            <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(review.created_at).toLocaleDateString()}</p>
+                            <p style="margin: 10px 0;"><strong>Skills Tagged:</strong> ${review.skill_tags ? review.skill_tags.join(', ') : 'None'}</p>
+                        </div>
+                    `;
+                });
+                reviewsList.innerHTML = reviewsHtml;
+            }
+        } catch (reviewErr) {
+            reviewsList.innerHTML = `<p style="color:red;">Failed to load reviews list: ${reviewErr.message}</p>`;
+        }
 
     } catch (error) {
         console.error("Failed to load reviews:", error);
