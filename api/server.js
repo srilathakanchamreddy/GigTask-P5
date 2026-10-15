@@ -657,10 +657,14 @@ async function startServer() {
   }
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
 
-process.on("SIGINT", async () => {
-  await closeDatabases();
-  process.exit(0);
-});
+  process.on("SIGINT", async () => {
+    await closeDatabases();
+    process.exit(0);
+  });
+}
+
+module.exports = { app, startServer };
 
