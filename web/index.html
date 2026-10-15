@@ -91,8 +91,33 @@
                     <div id="ranking-data" style="max-height: 300px; overflow-y: auto; padding-right: 10px;"></div>
                 </div>
                 
-                <div class="card" style="flex: 1; min-width: 300px;">
+                <!-- <div class="card" style="flex: 1; min-width: 300px;">
                     <h4 style="color: #495057; border-bottom: 1px solid #eee; padding-bottom: 10px;">7-Day Moving Average</h4>
+                    <canvas id="revenueChart"></canvas>
+                </div> -->
+                <!-- <div class="card" style="flex: 1; min-width: 300px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                        <h4 style="color: #495057; margin: 0; border: none; padding: 0;">7-Day Moving Average</h4>
+                        <div style="display: flex; gap: 5px;">
+                            <input type="text" id="chart-freelancer-id" placeholder="Freelancer ID (e.g. 1)" style="max-width: 170px; padding: 4px;">
+                            <button id="btn-fetch-chart" style="background-color: #e0f2fe; color: #0369a1; padding: 4px 10px; border: 1px solid #bae6fd; cursor: pointer;">View</button>
+                        </div>
+                    </div>
+                    <canvas id="revenueChart"></canvas>
+                </div> -->
+                <div class="card" style="flex: 1; min-width: 300px;">
+                    <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="color: #495057; margin: 0;">7-Day Moving Average</h4>
+                            <select id="chart-freelancer-select" style="max-width: 200px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                                <option value="all">Whole Platform</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 5px; justify-content: flex-end;">
+                            <input type="text" id="chart-search-input" placeholder="Paste Freelancer ID..." style="padding: 4px; max-width: 170px;">
+                            <button id="btn-chart-search" style="background-color: #e0f2fe; color: #0369a1; padding: 4px 10px; border: 1px solid #bae6fd; cursor: pointer;">Search</button>
+                        </div>
+                    </div>
                     <canvas id="revenueChart"></canvas>
                 </div>
             </div>

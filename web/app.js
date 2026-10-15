@@ -742,62 +742,211 @@ async function loadAnalytics() {
             rankingData.innerHTML = rankHtml + "</table>";
         }
 
-        // 3. Fetch Moving Average
-        const movingRes = await fetch(
-            "http://localhost:3000/api/analytics/moving-average"
-        );
+        // // 3. Fetch Moving Average
+        // const movingRes = await fetch(
+        //     "http://localhost:3000/api/analytics/moving-average"
+        // );
 
-        if (!movingRes.ok) {
-            throw new Error(`Moving Average API returned HTTP ${movingRes.status}`);
+        // if (!movingRes.ok) {
+        //     throw new Error(`Moving Average API returned HTTP ${movingRes.status}`);
+        // }
+
+        // const movingData = await movingRes.json();
+
+        // if (!movingData.data || movingData.data.length === 0) {
+        //     chartMessage.textContent = "No revenue data available for the chart.";
+
+        //     if (revenueChartInstance) {
+        //         revenueChartInstance.destroy();
+        //         revenueChartInstance = null;
+        //     }
+
+        //     return;
+        // }
+
+        // const chartData = movingData.data.slice(0, 30);
+        // const labels = chartData.map(
+        //     d => new Date(d.revenue_date).toLocaleDateString()
+        // );
+        // const averages = chartData.map(
+        //     d => parseFloat(d.moving_avg_7day)
+        // );
+
+        // if (revenueChartInstance) {
+        //     revenueChartInstance.destroy();
+        // }
+
+        // const ctx = chartCanvas.getContext("2d");
+
+        // revenueChartInstance = new Chart(ctx, {
+        //     type: "line",
+        //     data: {
+        //         labels: labels,
+        //         datasets: [{
+        //             label: "7-Day Moving Avg ($)",
+        //             data: averages,
+        //             borderColor: "#084298",
+        //             tension: 0.1
+        //             // borderColor: "#0F766E",
+        //             // backgroundColor: "rgba(15, 118, 110, 0.12)",
+        //             // fill: true,
+        //             // pointBackgroundColor: "#115E59",
+        //             // tension: 0.3
+        //         }]
+        //     }
+        // });
+
+        // chartMessage.textContent = "";
+        // // 3. Setup Moving Average Chart Search
+        // const chartInput = document.getElementById("chart-freelancer-id");
+        // const chartBtn = document.getElementById("btn-fetch-chart");
+        
+        // if (revenueChartInstance) {
+        //     revenueChartInstance.destroy();
+        //     revenueChartInstance = null;
+        // }
+        
+        // chartMessage.textContent = "Enter a Freelancer ID and click View to load chart.";
+
+        // // Bind the button to fetch data only when clicked
+        // chartBtn.onclick = async () => {
+        //     const fId = chartInput.value.trim();
+        //     if (!fId) return;
+            
+        //     chartMessage.textContent = "Loading chart data...";
+        //     chartBtn.disabled = true;
+            
+        //     try {
+        //         // Pass the freelancer ID to our new backend route
+        //         const movingRes = await fetch(`http://localhost:3000/api/analytics/moving-average?freelancer_id=${fId}`);
+        //         if (!movingRes.ok) throw new Error("Failed to fetch chart data");
+                
+        //         const movingData = await movingRes.json();
+                
+        //         if (!movingData.data || movingData.data.length === 0) {
+        //             chartMessage.textContent = "No data found for this freelancer.";
+        //             if (revenueChartInstance) revenueChartInstance.destroy();
+        //             chartBtn.disabled = false;
+        //             return;
+        //         }
+                
+        //         chartMessage.textContent = "";
+        //         const labels = movingData.data.map(d => new Date(d.revenue_date).toLocaleDateString());
+        //         const averages = movingData.data.map(d => parseFloat(d.moving_avg_7day));
+        //         const freelancerName = movingData.data[0].freelancer_name;
+
+        //         if (revenueChartInstance) revenueChartInstance.destroy();
+                
+        //         const ctx = chartCanvas.getContext("2d");
+        //         revenueChartInstance = new Chart(ctx, {
+        //             type: "line",
+        //             data: {
+        //                 labels: labels,
+        //                 datasets: [{
+        //                     label: `7-Day Moving Avg ($) - ${freelancerName}`,
+        //                     data: averages,
+        //                     borderColor: "#084298",
+        //                     tension: 0.1
+        //                 }]
+        //             }
+        //         });
+        //     } catch (err) {
+        //         chartMessage.textContent = "Error loading chart. Please check the ID.";
+        //     } finally {
+        //         chartBtn.disabled = false;
+        //     }
+        // };
+        // 3. Setup Chart: Whole Platform + Dropdown + Search
+        const chartSelect = document.getElementById("chart-freelancer-select");
+        const chartSearchInput = document.getElementById("chart-search-input");
+        const chartSearchBtn = document.getElementById("btn-chart-search");
+        
+        // Build the dropdown: Whole Platform + Top Earners
+        let dropdownHtml = `<option value="all">🌟 Whole Platform</option>`;
+        if (rankData.data && rankData.data.length > 0) {
+            dropdownHtml += `<optgroup label="Top Earners">`;
+            dropdownHtml += rankData.data.map(f => 
+                `<option value="${f.freelancer_id}">#${f.revenue_rank} - ${f.freelancer_name}</option>`
+            ).join("");
+            dropdownHtml += `</optgroup>`;
         }
+        chartSelect.innerHTML = dropdownHtml;
 
-        const movingData = await movingRes.json();
+        const fetchAndRenderChart = async (fId) => {
+            chartMessage.textContent = "Loading chart data...";
+            chartSelect.disabled = true;
+            chartSearchBtn.disabled = true;
+            
+            try {
+                const movingRes = await fetch(`http://localhost:3000/api/analytics/moving-average?freelancer_id=${fId}`);
+                if (!movingRes.ok) throw new Error("Failed to fetch chart data");
+                
+                const movingData = await movingRes.json();
+                chartMessage.textContent = "";
 
-        if (!movingData.data || movingData.data.length === 0) {
-            chartMessage.textContent = "No revenue data available for the chart.";
+                if (revenueChartInstance) {
+                    revenueChartInstance.destroy();
+                }
 
-            if (revenueChartInstance) {
-                revenueChartInstance.destroy();
-                revenueChartInstance = null;
+                if (!movingData.data || movingData.data.length === 0) {
+                    chartMessage.textContent = "No data found.";
+                    return;
+                }
+                
+                const labels = movingData.data.map(d => new Date(d.revenue_date).toLocaleDateString());
+                const averages = movingData.data.map(d => parseFloat(d.moving_avg_7day));
+                const labelName = movingData.data[0].freelancer_name || "Whole Platform";
+
+                const ctx = chartCanvas.getContext("2d");
+                revenueChartInstance = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: `7-Day Moving Avg ($) - ${labelName}`,
+                            data: averages,
+                            borderColor: "#084298",
+                            tension: 0.1
+                        }]
+                    }
+                });
+            } catch (err) {
+                chartMessage.textContent = "Error loading chart.";
+            } finally {
+                chartSelect.disabled = false;
+                chartSearchBtn.disabled = false;
             }
+        };
 
-            return;
-        }
+        // Default Load: Whole Platform
+        fetchAndRenderChart('all');
 
-        const chartData = movingData.data.slice(0, 30);
-        const labels = chartData.map(
-            d => new Date(d.revenue_date).toLocaleDateString()
-        );
-        const averages = chartData.map(
-            d => parseFloat(d.moving_avg_7day)
-        );
+        // Dropdown Change Event
+        chartSelect.onchange = (e) => {
+            chartSearchInput.value = ""; // Clear search box when using dropdown
+            fetchAndRenderChart(e.target.value);
+        };
 
-        if (revenueChartInstance) {
-            revenueChartInstance.destroy();
-        }
+        // Manual Search Event
+        chartSearchBtn.onclick = () => {
+            const searchId = chartSearchInput.value.trim();
+            if (!searchId) return;
 
-        const ctx = chartCanvas.getContext("2d");
-
-        revenueChartInstance = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: "7-Day Moving Avg ($)",
-                    data: averages,
-                    borderColor: "#084298",
-                    tension: 0.1
-                    // borderColor: "#0F766E",
-                    // backgroundColor: "rgba(15, 118, 110, 0.12)",
-                    // fill: true,
-                    // pointBackgroundColor: "#115E59",
-                    // tension: 0.3
-                }]
+            // Check if this ID is already in the dropdown
+            let exists = Array.from(chartSelect.options).some(opt => String(opt.value) === searchId);
+            
+            // If it's a new ID, add it to the dropdown so it stays selected
+            if (!exists) {
+                const newOption = document.createElement("option");
+                newOption.value = searchId;
+                // Show a shortened version of the UUID in the dropdown
+                newOption.text = `🔍 ID: ${searchId.substring(0, 8)}...`;
+                chartSelect.appendChild(newOption);
             }
-        });
-
-        chartMessage.textContent = "";
-
+            
+            chartSelect.value = searchId;
+            fetchAndRenderChart(searchId);
+        };
     } catch (error) {
         console.error("Analytics failed to load:", error);
 
