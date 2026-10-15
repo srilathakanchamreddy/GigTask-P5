@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GigTask Wireframes</title>
+<style>
+  :root{--ink:#2b2b2b;--line:#8a8a8a;--soft:#d9d9d9;--fill:#efefef;--note:#1f6fd1;--bg:#f4f4f2}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 "Segoe UI",Helvetica,Arial,sans-serif;padding:32px 16px}
+  h1{font-size:26px;margin:0 0 4px}
+  .sub{color:#666;margin:0 0 20px}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:32px;font-size:13px;color:#555}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sheet{max-width:1180px;margin:0 auto}
+  .wf{background:#fff;border:1px solid #ccc;border-radius:8px;padding:20px;margin-bottom:40px}
+  .wf h2{font-size:18px;margin:0 0 2px}
+  .wf .purpose{font-size:13px;color:#666;margin:0 0 14px}
+  .row{display:flex;gap:20px;align-items:flex-start}
+  .notes{width:250px;flex:none;font-size:12.5px}
+  .notes ol{margin:0;padding-left:0;list-style:none;counter-reset:n}
+  .notes li{counter-increment:n;margin-bottom:9px;padding-left:28px;position:relative}
+  .notes li::before{content:counter(n);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--note);color:#fff;font-size:11px;display:grid;place-items:center;font-weight:700}
+  code{font-size:11.5px}
+
+  .app{flex:1;border:2px solid var(--ink);border-radius:6px;overflow:hidden;background:#fafafa;min-width:0;padding:14px}
+  .hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .hdr .logo{font-weight:800;font-size:18px}
+  .ptitle{font-weight:700;font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;background:#fff;border:1.5px solid var(--line);border-radius:6px;padding:8px;margin-bottom:12px}
+  .tabs div{flex:1;text-align:center;font-size:11.5px;font-weight:600;padding:6px 4px;border-radius:4px;background:var(--fill);white-space:nowrap}
+  .tabs .on{background:var(--ink);color:#fff}
+
+  .box{border:1.5px solid var(--line);border-radius:6px;padding:10px;background:#fff}
+  .mod{border-top:4px solid var(--ink)}
+  .fill{background:var(--fill)}
+  .btn{display:inline-block;border:1.5px solid var(--ink);border-radius:5px;padding:5px 12px;font-size:12.5px;font-weight:600;background:#fff;white-space:nowrap}
+  .btn.p{background:var(--ink);color:#fff}
+  .inp{border:1.5px solid var(--line);border-radius:4px;height:30px;padding:0 9px;display:flex;align-items:center;color:#888;font-size:12.5px;background:#fff}
+  .lbl{font-size:11.5px;font-weight:600;color:#555;margin:0 0 4px;text-transform:uppercase;letter-spacing:.4px}
+  .h3{font-weight:700;font-size:14px;margin:0 0 6px;display:flex;align-items:center;gap:8px}
+  .badge{display:inline-block;border:1.5px solid var(--ink);border-radius:20px;padding:0 8px;font-size:11px;font-weight:600}
+  .badge.g{border-style:dashed}
+  .x{background:
+      linear-gradient(to top right,transparent calc(50% - 1px),var(--soft) 50%,transparent calc(50% + 1px)),
+      linear-gradient(to top left,transparent calc(50% - 1px),var(--soft) 50%,transparent calc(50% + 1px)),#fff}
+  .t{width:100%;border-collapse:collapse;font-size:12.5px}
+  .t th{text-align:left;border-bottom:2px solid var(--ink);padding:6px;font-size:11.5px;text-transform:uppercase;color:#555}
+  .t td{border-bottom:1px solid var(--soft);padding:6px}
+  .mono{font-family:Consolas,Menlo,monospace}
+  .ln{height:8px;background:var(--soft);border-radius:4px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .flex{display:flex;gap:8px;align-items:center}
+  .gap{height:12px}
+  .pin{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--note);color:#fff;font-size:11px;font-weight:700;flex:none}
+  .ban{border:1.5px dashed var(--ink);border-radius:5px;padding:8px 10px;font-size:12.5px}
+  .muted{color:#888}
+  .small{font-size:11.5px}
+  .card p{margin:3px 0;font-size:12.5px}
+  .bars{display:flex;align-items:flex-end;gap:10px;height:110px;padding:8px 4px 0;border-bottom:1.5px solid var(--ink)}
+  .bars div{flex:1;background:var(--soft);border:1.5px solid var(--line);border-bottom:none}
+
+  .phone{width:250px;border:2px solid var(--ink);border-radius:22px;padding:10px 8px;background:#fff;flex:none}
+  .phone .scr{border:1.5px solid var(--line);border-radius:6px;height:470px;overflow:hidden;padding:8px;background:#fafafa;font-size:11.5px}
+  .phone .tabs div{flex:1 1 40%;font-size:10px;padding:4px 2px}
+  .states{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .state{border:2px solid var(--ink);border-radius:6px;padding:14px;min-height:170px;display:flex;flex-direction:column;gap:8px}
+  .state h3{margin:0;font-size:14px}
+  .center{flex:1;display:grid;place-items:center;text-align:center;font-size:12.5px;color:#555}
+  .spin{width:30px;height:30px;border:3px solid var(--soft);border-top-color:var(--ink);border-radius:50%;margin:0 auto 8px}
+</style>
+</head>
+<body>
+<div class="sheet">
+  <h1>GigTask — Wireframes</h1>
+  <p class="sub">Assignment 1b · Project 5 · Low-fidelity layouts for every tab of the dashboard. Blue numbers match the notes beside each frame.</p>
+  <div class="legend">
+    <span><span class="btn p">Btn</span> primary / active</span>
+    <span><span class="btn">Btn</span> button</span>
+    <span><span class="badge">STATUS</span> status badge</span>
+    <span><span class="pin">1</span> annotation</span>
+    <span><span class="box x" style="width:40px;height:22px;padding:0"></span> chart / map placeholder</span>
+  </div>
+  <div id="frames"></div>
+</div>
+
+<script>
+const TABS=["Clients","Freelancers","Contracts","Fund a Gig","Audit Trail","Analytics","Nearby Workers","Reviews & Portfolios"];
+function shell(active,title,content,actor){
+  return `<div class="app">
+    <div class="hdr"><span class="logo">GigTask Dashboard</span><span style="flex:1"></span>
+      <div class="inp" style="width:250px">${actor||"Acme Repairs ▾"}</div></div>
+    <div class="ptitle">${title}</div>
+    <div class="tabs">${TABS.map(t=>`<div class="${t===active?'on':''}">${t}</div>`).join("")}</div>
+    ${content}</div>`;
+}
+function frame(id,h,purpose,body,notes){
+  return `<section class="wf" id="${id}"><h2>${h}</h2><p class="purpose">${purpose}</p>
+   <div class="row">${body}${notes?`<div class="notes"><ol>${notes.map(n=>`<li>${n}</li>`).join("")}</ol></div>`:""}</div></section>`;
+}
+const card=(id,c,f,s,a)=>`<div class="box card"><div class="h3 mono">Contract ID: ${id}</div><p><b>Client:</b> ${c}</p><p><b>Freelancer:</b> ${f}</p><p><b>Status:</b> <span class="badge">${s}</span></p><p><b>Amount:</b> <span class="mono">$${a}</span></p></div>`;
+
+const F=[];
+
+/* 0 shell */
+F.push(frame("wf-shell","0 · Dashboard shell &amp; actor switcher",
+ "One page. The tab bar swaps which module is shown; no login, the switcher picks the client you act as.",
+ `<div class="app">
+   <div class="hdr"><span class="pin">1</span><span class="logo">GigTask Dashboard</span><span style="flex:1"></span>
+     <span class="pin">2</span><div class="inp" style="width:250px">-- Select Client to Act As -- ▾</div></div>
+   <div class="ptitle">Page title <span class="pin">3</span></div>
+   <div class="tabs">${TABS.map((t,i)=>`<div class="${i==0?'on':''}">${t}</div>`).join("")}</div>
+   <div class="flex"><span class="pin">4</span><span class="small muted">tab bar</span></div><div class="gap"></div>
+   <div class="flex"><span class="pin">5</span><div class="inp" style="width:380px">Search... (Press Enter)</div></div>
+   <div class="gap"></div><div class="box x" style="height:280px"></div></div>`,
+ ["Title doubles as the app name.","<b>Actor switcher</b>: dropdown filled from the clients list. Fund a Gig and Audit Trail use the chosen client.","Page title changes with the tab (e.g. “Audit Trail”).","Eight tabs. Active tab filled dark. Wraps onto extra rows on small screens.","Search box shown only on Browse tabs."]));
+
+/* 1 browse */
+F.push(frame("wf-browse","1 · Browse — Clients / Freelancers / Contracts",
+ "Paginated cards with search. Only one page of rows comes from the server at a time.",
+ shell("Contracts","Browse Platform",`
+   <div class="flex"><span class="pin">1</span><div class="inp" style="width:380px">🔍 Search... (Press Enter)</div></div><div class="gap"></div>
+   <div class="h3">Contracts List <span class="pin">2</span></div>
+   <div class="grid3"><span style="display:contents">
+     ${card("a3f9…e21","Acme Repairs","Ravi Kumar","FUNDED","4200.00")}
+     ${card("7c21…0b8","Lotus Movers","Divya S","IN_PROGRESS","1150.00")}
+     ${card("e0b4…9fa","Priya N","Arjun M","COMPLETED","9800.00")}
+   </span></div>
+   <div class="gap"></div>
+   <div class="flex" style="justify-content:center"><span class="pin">3</span><span class="btn">Previous</span><b class="small">Page 1 (Total: 100000)</b><span class="btn">Next</span></div>`),
+ ["Search sent as <code>?search=</code> on Enter; resets to page 1.","Each record is a card. Click a card to open its detail view (frame 1b). Clients show escrow balance; freelancers show availability.","Server-side pagination: 10 cards per page (<code>?page=&amp;limit=10</code>; the API caps at 100). Total count shows the real table size."]));
+
+/* 1b detail */
+F.push(frame("wf-detail","1b · Contract detail &amp; status change",
+ "Detail view for one record. Contracts get a button for the next status, which is how the partial unique index is demonstrated.",
+ shell("Contracts","Browse Platform",`
+   <span class="btn">⬅ Back to List</span> <span class="pin">1</span><div class="gap"></div>
+   <div class="box" style="border-width:2px">
+     <div class="h3">Contract Details</div>
+     <p class="small"><b>Contract ID:</b> <span class="mono">a3f9…e21</span></p>
+     <p class="small"><b>Status:</b> FUNDED</p>
+     <p class="small"><b>Client:</b> Acme Repairs (ID: <span class="mono">5b1c…</span>)</p>
+     <p class="small"><b>Freelancer:</b> Ravi Kumar (ID: <span class="mono">9d0e…</span>)</p>
+     <p class="small"><b>Agreed Budget:</b> $4200.00 · <b>Created:</b> 14/10/2026, 10:02</p>
+     <hr style="border:none;border-top:1.5px solid var(--soft)">
+     <div class="flex"><span class="pin">2</span><span class="btn p">Start Gig (Set IN_PROGRESS)</span></div><div class="gap"></div>
+     <div class="flex"><span class="pin">3</span><div class="ban" style="flex:1">✅ Success! Status is now IN_PROGRESS. <span class="muted">Click 'Back to List' to refresh.</span></div></div><div class="gap"></div>
+     <div class="flex"><span class="pin">4</span><div class="ban" style="flex:1;border-style:solid">❌ Failed: This change conflicts with an existing active contract.</div></div>
+   </div>`),
+ ["Back returns to the same page of the list.","Only the next legal status is offered: FUNDED → “Start Gig”, IN_PROGRESS → “Finish Gig”, COMPLETED → “closed” text. Calls <code>PATCH /api/contracts/:id/status</code>.","Success: freelancer's <code>is_available</code> is updated in the same transaction.","Failure: PostgreSQL <code>23505</code> on <code>idx_active_contract_freelancer</code> → HTTP 409 → shown in plain words."]));
+
+/* 2 fund */
+F.push(frame("wf-fund","2 · Fund a Gig (Workflow 1 — <code>fund_gig</code>)",
+ "The selected client funds a freelancer. The stored procedure deducts escrow and creates the contract in one transaction.",
+ shell("Fund a Gig","Fund a Gig",`
+   <div class="box mod">
+     <div class="h3">Fund a New Gig</div>
+     <div class="small muted">Select a Client from the top-right dropdown first! <span class="pin">1</span></div><div class="gap"></div>
+     <div class="flex"><span class="pin">2</span><div class="inp" style="width:330px">Paste Freelancer UUID here</div><div class="inp" style="width:140px">Budget ($)</div><span class="btn p">Submit Payment</span><span class="pin">3</span></div>
+     <div class="gap"></div>
+     <div class="flex" style="align-items:flex-start"><span class="pin">4</span>
+      <div class="ban" style="flex:1;border-style:solid">
+       <b>✅ Gig Funded Successfully!</b><br><br>
+       <b>Client Balances:</b><br><span class="mono">Before: $25000.00 ➔ After: $20800.00</span><br><br>
+       <b>Database Trigger Fired (Audit Log Created):</b><span class="pin" style="margin-left:6px">5</span><br>
+       Action: DEBIT of <span class="mono">$-4200.00</span><br>Log ID: <span class="mono">5d1e8a…</span></div></div>
+   </div>`,"Acme Repairs ▾"),
+ ["Client comes from the actor switcher.","Freelancer UUID copied from the Freelancers tab, plus a budget. Checked in the browser first (UUID present, budget &gt; 0).","Button is disabled and reads “Processing…” while the request runs, so it can't be submitted twice.","<code>POST /api/fund-gig</code> returns <code>balanceBefore</code>, <code>balanceAfter</code>, the new contract and the audit row.","The audit row proves <code>trg_escrow_audit</code> fired."]));
+
+/* 2b errors */
+F.push(frame("wf-fund-errors","2b · Fund a Gig — failure messages",
+ "Shown in the same result box (red) when validation fails or the procedure raises and the transaction rolls back.",
+ `<div class="states" style="flex:1">
+   <div class="state"><h3>Insufficient balance</h3>
+     <div class="ban"><b>Transaction Failed:</b> Insufficient escrow balance. Available: 3000.00, Required: 4200.00</div>
+     <div class="small muted">Raised by <code>fund_gig</code>. Nothing is charged; no audit row.</div></div>
+   <div class="state"><h3>Bad input</h3>
+     <div class="ban">Please enter a valid Freelancer ID and a budget greater than zero.</div>
+     <div class="small muted">Caught in the browser. Bad UUIDs from the API: “An ID or value has an invalid format.”</div></div>
+   <div class="state"><h3>No client selected / not found</h3>
+     <div class="ban"><b>Transaction Failed:</b> Client does not exist.</div>
+     <div class="small muted">Also: “Freelancer does not exist.” (404 from the API).</div></div>
+ </div>`));
+
+/* 3 audit */
+F.push(frame("wf-audit","3 · Audit Trail (<code>wallet_audit_logs</code>)",
+ "Read-only escrow history for the selected client with a date filter and running total.",
+ shell("Audit Trail","Audit Trail",`
+   <div class="box mod">
+     <div class="h3">Client Audit Trail</div>
+     <div class="small muted">Select a Client from the top-right dropdown to view their history. <span class="pin">1</span></div><div class="gap"></div>
+     <div class="flex"><span class="pin">2</span><b class="small">From:</b><div class="inp" style="width:140px">dd-mm-yyyy</div><b class="small">To:</b><div class="inp" style="width:140px">dd-mm-yyyy</div><span class="btn p">Fetch Audit Logs</span></div><div class="gap"></div>
+     <table class="t">
+       <tr><th>Date ↓</th><th>Action</th><th>Amount</th><th>Balance After <span class="pin">3</span></th><th>Running Net Change <span class="pin">4</span></th></tr>
+       <tr><td>15/10/2026</td><td><b>DEBIT</b></td><td class="mono">$4200</td><td class="mono">$20800.00</td><td class="mono">$800.00</td></tr>
+       <tr><td>11/10/2026</td><td><b>CREDIT</b></td><td class="mono">$5000</td><td class="mono">$25000.00</td><td class="mono">$5000.00</td></tr>
+       <tr><td>04/10/2026</td><td><b>DEBIT</b></td><td class="mono">$3000</td><td class="mono">$20000.00</td><td class="mono">$0.00</td></tr>
+       <tr><td><div class="ln" style="width:60px"></div></td><td><div class="ln" style="width:40px"></div></td><td><div class="ln" style="width:40px"></div></td><td><div class="ln" style="width:60px"></div></td><td><div class="ln" style="width:60px"></div></td></tr>
+     </table>
+   </div>`),
+ ["Loads automatically when the tab opens, for the client in the switcher.","Date range sent as <code>?from=&amp;to=</code>.","<code>balance_after</code> as written by the trigger. CREDIT green, DEBIT red.","<code>SUM(amount_changed) OVER (PARTITION BY client_id ORDER BY timestamp)</code>.","No edit or delete anywhere — the table is protected by <code>trg_prevent_audit_modification</code>."]));
+
+/* 4 analytics */
+F.push(frame("wf-analytics","4 · Analytics (Workflow 2 + materialized view)",
+ "Summary from <code>freelancer_earnings</code>, DENSE_RANK table and 7-day moving-average chart.",
+ shell("Analytics","Analytics",`
+   <div class="box mod"><div class="flex"><div class="h3" style="margin:0">Platform Summary</div><span style="flex:1"></span><span class="pin">1</span><span class="btn p">Refresh View</span></div>
+     <div class="small" style="margin-top:8px"><b>Total Earnings:</b> <span class="mono">$274000000.00</span><br><b>Completed Contracts:</b> 56310</div>
+     <div class="small muted">Last Refreshed: 15/10/2026, 19:12</div></div>
+   <div class="gap"></div>
+   <div class="grid2">
+     <div class="box"><div class="h3">Top Freelancers <span class="pin">2</span></div>
+       <table class="t"><tr><th>Rank</th><th>Name</th><th>Earnings</th></tr>
+       <tr><td>#1</td><td>Arjun M</td><td class="mono">$142300.00</td></tr>
+       <tr><td>#2</td><td>Divya S</td><td class="mono">$138900.00</td></tr>
+       <tr><td>#2</td><td>Kiran P</td><td class="mono">$138900.00</td></tr>
+       <tr><td>#3</td><td>Ravi Kumar</td><td class="mono">$130050.00</td></tr></table>
+       <div class="small muted">Scrolls; tied earnings share a rank.</div></div>
+     <div class="box"><div class="h3">7-Day Moving Average <span class="pin">3</span></div>
+       <div class="box x" style="height:170px;border-style:dashed"></div>
+       <div class="small muted">x = date · y = revenue · line = 7-day average</div></div>
+   </div>`,"Acme Repairs ▾"),
+ ["Numbers from <code>GET /api/analytics/summary</code>. Refresh calls <code>REFRESH MATERIALIZED VIEW CONCURRENTLY</code> then reloads the summary and time.","<code>DENSE_RANK() OVER (ORDER BY total_earnings DESC)</code> from the materialized view, top 100.","Line chart (Chart.js) from the window query (<code>PARTITION BY freelancer_id</code>, <code>ROWS BETWEEN 6 PRECEDING AND CURRENT ROW</code>). <i>Planned:</i> a freelancer picker so the chart shows one freelancer."]));
+
+/* 5 map */
+F.push(frame("wf-map","5 · Nearby Workers (Workflow 3 — <code>$geoNear</code>)",
+ "Available workers within 5 km of a job site, on a map and as a distance-sorted list.",
+ shell("Nearby Workers","Nearby Workers",`
+   <div class="box mod">
+     <div class="h3">Find Nearby Workers</div>
+     <div class="small muted">Pings appear without a full page reload.</div><div class="gap"></div>
+     <div class="flex"><span class="pin">1</span><div class="inp" style="width:130px">13.0827</div><div class="inp" style="width:130px">80.2707</div><span class="btn p">Search Area</span></div><div class="gap"></div>
+     <div class="grid2" style="grid-template-columns:1.6fr 1fr">
+      <div class="box" style="height:300px;position:relative;padding:0;overflow:hidden;background:repeating-linear-gradient(0deg,#fafafa 0 29px,#eee 29px 30px)">
+        <div style="position:absolute;left:50%;top:50%;width:230px;height:230px;margin:-115px 0 0 -115px;border:2px dashed var(--line);border-radius:50%"></div>
+        <div style="position:absolute;left:50%;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border:3px solid var(--ink);border-radius:50%;background:#fff"></div>
+        <div style="position:absolute;left:calc(50% + 14px);top:calc(50% - 12px)" class="pin">2</div>
+        ${[[56,40],[40,58],[63,64],[36,36],[58,55]].map(([x,y])=>`<div style="position:absolute;left:${x}%;top:${y}%;font-size:16px">📍</div>`).join("")}
+        <div style="position:absolute;left:8px;top:8px;display:flex;flex-direction:column;gap:3px"><span class="btn">+</span><span class="btn">−</span></div>
+        <div style="position:absolute;right:8px;bottom:6px" class="small muted">Leaflet · Esri tiles</div>
+      </div>
+      <div class="box" style="height:300px;overflow:hidden"><div class="flex"><b class="small">Found 37 workers</b><span class="pin">3</span></div><div class="gap"></div>
+        ${[["57408",40],["12093",612],["88120",1270],["30541",2904],["71260",3381]].map(([w,d])=>`<div class="small" style="border-bottom:1px solid var(--soft);padding:4px 0"><b>Worker ID:</b> ${w}<br><b>Distance:</b> ${d} meters</div>`).join("")}
+      </div></div>
+   </div>`),
+ ["Job-site latitude/longitude, default Chennai Central (Part A's test point). Inputs are validated before the call.","Red circle = job site. Pins = available workers; popup shows ID and distance. <i>Planned:</i> dashed 5 km circle (<code>L.circle</code>, radius 5000).","List from <code>$geoNear</code> (<code>maxDistance: 5000</code>, <code>is_available: true</code>, up to 100), nearest first.","<i>Planned:</i> re-run the search every 5 s with <code>setInterval</code> so new pings appear without a reload."]));
+
+/* 6 reviews */
+F.push(frame("wf-reviews","6 · Reviews &amp; Portfolios (Workflow 4 — <code>$facet</code>)",
+ "Three results from one <code>$facet</code> pipeline, a portfolio lookup, and the latest reviews.",
+ shell("Reviews & Portfolios","Reviews & Portfolios",`
+   <div class="grid2">
+     <div class="box mod"><div class="h3">Rating Distribution <span class="pin">1</span></div>
+       <div class="small">Overall Average: <b>3.00 ⭐</b></div>
+       <div class="bars"><div style="height:80%"></div><div style="height:80%"></div><div style="height:82%"></div><div style="height:79%"></div><div style="height:81%"></div></div>
+       <div class="flex small" style="justify-content:space-around"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div></div>
+     <div class="box mod"><div class="h3">Top Skills Tagged <span class="pin">2</span></div>
+       <div class="flex" style="gap:16px"><div style="flex:none;width:110px;height:110px;border-radius:50%;border:2px solid var(--line);background:conic-gradient(#ccc 0 12%,#e6e6e6 0 23%,#bbb 0 34%,#ddd 0 45%,#c4c4c4 0 56%,#eee 0 100%)"></div>
+       <div class="small">C++ · React · MongoDB · Java · Python · AWS · Kubernetes · SQL · Docker · Spring Boot</div></div></div>
+   </div><div class="gap"></div>
+   <div class="box mod"><div class="h3">Search Freelancer Portfolio <span class="pin">3</span></div>
+     <div class="flex"><div class="inp" style="width:280px">Enter Freelancer ID (e.g., 1 or 2)</div><span class="btn p">View Portfolio</span></div><div class="gap"></div>
+     <div class="box fill small"><b>Freelancer ID: 2</b> <span class="muted">MongoDB _id: 66f…</span>
+       <div class="grid2" style="margin-top:6px"><div><b>Skills:</b><br>• Python<br>• MongoDB<br>• AWS</div><div><b>Certifications:</b><br>• AWS Certified Developer</div></div></div></div>
+   <div class="gap"></div>
+   <div class="box mod"><div class="h3">Freelancer Reviews <span class="pin">4</span></div>
+     <div class="grid3">${[5,3,4].map(r=>`<div class="box fill small"><b>Rating: ${"⭐".repeat(r)}</b><br>Freelancer ID: 4812<br>Date: 15/10/2026<br>Skills Tagged: React, SQL</div>`).join("")}</div></div>`),
+ ["<code>rating_distribution</code> + <code>overall_average_rating</code> facets, bar chart (Chart.js).","<code>skill_tag_frequency</code> facet (<code>$unwind</code> → <code>$group</code>, top 10), pie chart.","Flexible <code>Portfolios</code> document shown readably: arrays become bullet lists. “No portfolio found for this ID.” when empty.","Latest 50 reviews from <code>GET /api/reviews</code> as a responsive card grid."]));
+
+/* 7 states + phone */
+F.push(frame("wf-states","7 · Loading, empty &amp; error states + phone layout",
+ "Every list and chart uses these three states, so there is never a blank page.",
+ `<div style="flex:1;display:flex;flex-direction:column;gap:14px">
+   <div class="states">
+     <div class="state"><h3>Loading</h3><div class="center"><div><b>Loading contracts...</b><br><span class="muted">text message in the list area</span></div></div></div>
+     <div class="state"><h3>Empty</h3><div class="center"><div>No contracts found.<br>Try a different search.</div></div></div>
+     <div class="state"><h3>Error</h3><div class="ban">Unable to load data. Server returned HTTP 500</div><div class="center"><span class="btn p">Retry</span></div></div>
+   </div>
+   <div class="box small"><b>Screen-specific messages:</b> “No available workers found within 5km.” · “No audit records found for this period.” · “No portfolio found for this ID.” · Charts: “Review chart unavailable because the data failed to load.”</div>
+ </div>
+ <div class="phone"><div class="scr">
+   <div style="font-weight:800;font-size:13px">GigTask Dashboard</div>
+   <div class="inp" style="height:24px;margin:6px 0;font-size:10.5px">Acme Repairs ▾</div>
+   <div style="font-weight:700;margin-bottom:4px">Fund a Gig</div>
+   <div class="tabs" style="padding:4px;gap:3px">${TABS.map(t=>`<div class="${t==='Fund a Gig'?'on':''}">${t}</div>`).join("")}</div>
+   <div class="box mod" style="padding:8px"><b>Fund a New Gig</b>
+     <div class="inp" style="height:24px;margin:6px 0;font-size:10.5px">Freelancer UUID</div>
+     <div class="inp" style="height:24px;margin-bottom:6px;font-size:10.5px">Budget ($)</div>
+     <span class="btn p" style="display:block;text-align:center">Submit Payment</span>
+     <div class="ban" style="margin-top:6px;font-size:10.5px">✅ Funded · $25000 ➔ $20800</div></div>
+ </div></div>`));
+
+document.getElementById("frames").innerHTML=F.join("");
+</script>
+</body>
+</html>
